@@ -65,8 +65,41 @@ const updateNews = async (req,res) =>{
 
 }
 
+const deleteNews = async (req,res) =>{
+
+    try{
+
+        const idNews = req.body.id;
+
+        const newsTemp = await News.findById(idNews);
+
+        if(!newsTemp) {
+            return res.status(404).json({
+               ok: false,
+               msg: 'Incorrect news'
+            });
+        }
+
+        await News.findByIdAndDelete(idNews)
+            .then( data => {
+                res.status(200).json({
+                    ok: true,
+                    data
+                })
+            });
+
+    }catch (error) {
+        res.status(500).json({
+            ok: false,
+            msg: "Error"
+        });
+    }
+
+}
+
 module.exports = {
     getNews,
     updateNews,
-    createNews
+    createNews,
+    deleteNews
 }
