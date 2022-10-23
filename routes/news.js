@@ -23,9 +23,6 @@ router.post('/', [
     checkField
 ], createNews);
 
-router.delete('/',[
-    check('id').isMongoId(),
-    checkField
-], deleteNews);
+router.delete('/:id', deleteNews);
 
 module.exports = router;

@@ -46,9 +46,22 @@ const updateNews = async (req,res) =>{
 
         const idNews = req.body.id;
 
-        const {id, ...fields} = req.body;
+        const newsTemp = await News.findById(idNews);
 
-        await News.findByIdAndUpdate(idNews, fields, {new: true})
+        if(!newsTemp) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'Incorrect news'
+            });
+        }
+
+        const { archiveDate } = req.body;
+
+        const data = {
+            archiveDate: archiveDate
+        }
+
+        await News.findByIdAndUpdate(idNews, data, {new: true})
             .then( data => {
                 res.status(200).json({
                     ok: true,
@@ -69,7 +82,14 @@ const deleteNews = async (req,res) =>{
 
     try{
 
-        const idNews = req.body.id;
+        const idNews = req.params.id;
+
+        if(!idNews){
+            return res.status(404).json({
+                ok: false,
+                msg: 'Incorrect news'
+            });
+        }
 
         const newsTemp = await News.findById(idNews);
 
