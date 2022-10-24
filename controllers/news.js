@@ -5,8 +5,15 @@ const getNews = async (req , res) => {
 
         const active = req.params.active || true;
 
-        const data = await News.find({archiveDate: {$exists:active}})
-            .sort({'archiveDate' : -1});
+        let data;
+
+        if(active === true){
+            data = await News.find({archiveDate: {$exists:active}})
+                .sort({'archiveDate' : -1});
+        }else{
+            data = await News.find({archiveDate: {$exists:active}})
+                .sort({'date' : -1});
+        }
 
         res.status(200).json({
             ok: true,
@@ -23,8 +30,13 @@ const getNews = async (req , res) => {
 
 const getNewsWS = async (type) => {
     try{
-        return await News.find({archiveDate: {$exists: type}})
-            .sort({'archiveDate': -1});
+        if(type === true){
+            return await News.find({archiveDate: {$exists:type}})
+                .sort({'archiveDate' : -1});
+        }else{
+            return await News.find({archiveDate: {$exists:type}})
+                .sort({'date' : -1});
+        }
 
     }catch (error) {
         return null;
