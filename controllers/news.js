@@ -5,7 +5,8 @@ const getNews = async (req , res) => {
 
         const active = req.params.active || true;
 
-        const data = await News.find({archiveDate: {$exists:active}});
+        const data = await News.find({archiveDate: {$exists:active}})
+            .sort({'archiveDate' : -1});
 
         res.status(200).json({
             ok: true,
@@ -17,6 +18,16 @@ const getNews = async (req , res) => {
             ok: false,
             msg: "Error"
         });
+    }
+}
+
+const getNewsWS = async (type) => {
+    try{
+        return await News.find({archiveDate: {$exists: type}})
+            .sort({'archiveDate': -1});
+
+    }catch (error) {
+        return null;
     }
 }
 
@@ -78,6 +89,23 @@ const updateNews = async (req,res) =>{
 
 }
 
+const updateNewsWS = async (type, id) =>{
+    try{
+        const newsTemp = await News.findById(id);
+        if(!newsTemp) {
+            return null;
+        }
+        const archiveDate = Date.now();
+        const data = {
+            archiveDate: archiveDate
+        }
+        await News.findByIdAndUpdate(id, data);
+        return getNewsWS(type);
+    }catch (error) {
+        return null;
+    }
+}
+
 const deleteNews = async (req,res) =>{
 
     try{
@@ -117,9 +145,25 @@ const deleteNews = async (req,res) =>{
 
 }
 
+const deleteNewsWS = async (type, id) =>{
+    try{
+        const newsTemp = await News.findById(id);
+        if(!newsTemp) {
+            return null;
+        }
+        await News.findByIdAndDelete(id);
+        return getNewsWS(type);
+    }catch (error) {
+        return null;
+    }
+}
+
 module.exports = {
     getNews,
+    getNewsWS,
     updateNews,
+    updateNewsWS,
     createNews,
-    deleteNews
+    deleteNews,
+    deleteNewsWS
 }
